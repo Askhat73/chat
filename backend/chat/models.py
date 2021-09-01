@@ -7,7 +7,11 @@ from core.models import StandardModel
 class Room(StandardModel):
     """Комната."""
 
-    name = models.CharField(max_length=50, verbose_name=_("Название комнаты"))
+    name = models.CharField(
+        max_length=50,
+        verbose_name=_("Название комнаты"),
+        unique=True,
+    )
 
     class Meta:
         verbose_name = _("Комната")

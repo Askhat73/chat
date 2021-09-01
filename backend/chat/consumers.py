@@ -5,6 +5,7 @@ from channels.auth import login, logout
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 
 from .enums import MessageType
 from .models import Message, Room
@@ -25,6 +26,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 "type": MessageType.NOTIFICATION.value,
                 "user_name": user_name,
                 "text": "вступил(а) в группу",
+                "created_at": timezone.now(),
             }
         )
         serializer.is_valid(raise_exception=True)
@@ -43,6 +45,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data: str = None, bytes_data: bytes = None):
         """Обрабатывает получение сообщения от Вебсокета."""
         data = json.loads(text_data)
+        data["created_at"] = timezone.now()
         serializer = MessageSerializer(data=data)
         serializer.is_valid(raise_exception=True)
         message = serializer.data
@@ -53,7 +56,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def chat_message(self, message: dict):
         """Обрабатывает отправку сообщения группам."""
         message.pop("type", None)
-        message["user_name"] = self.user.username
+        message["type"] = MessageType.MESSAGE.value
 
         await self.send(text_data=json.dumps(message))
 
@@ -73,6 +76,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     def save_message(self, message: dict) -> Message:
         """Сохраняет сообщение."""
         message.pop("type", None)
+        message.pop("user_name", None)
         message = Message(**message)
         message.user = self.user
         message.updated_at = message.created_at

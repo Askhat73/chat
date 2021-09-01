@@ -13,7 +13,11 @@ SECRET_KEY = "kf0-^j6u6&h9x$ld)15h=errrlgwl5vq=c)g^!6kof%#rw0vc_"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "*",
+]
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 
 # Application definition
@@ -28,6 +32,7 @@ INSTALLED_APPS = [
     # Third-party apps
     "rest_framework",
     "channels",
+    "corsheaders",
     # Local apps
     "core.apps.CoreConfig",
     "users.apps.UsersConfig",
@@ -35,6 +40,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -109,7 +115,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "ru"
 
 TIME_ZONE = "UTC"
 

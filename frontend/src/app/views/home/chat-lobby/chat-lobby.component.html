@@ -1,0 +1,61 @@
+<div class="row rounded-lg overflow-hidden shadow mb-3">
+
+  <div class="col-12 px-0">
+    <div class="bg-white">
+
+      <div class="bg-gray px-4 py-2 bg-light">
+        <p class="h5 mb-0 py-1">Создать чат комнату</p>
+      </div>
+
+      <form [formGroup]="createRoomForm" (ngSubmit)="createRoom()" action="#" class="bg-light">
+        <div class="input-group">
+          <input type="text" formControlName="roomName" placeholder="Название чат комнаты" aria-describedby="button-addon2" class="form-control rounded-0 border-0 py-4 bg-light">
+          <div class="input-group-append">
+            <button id="button-add" type="submit" class="btn btn-link"><fa-icon [icon]="faCheck"></fa-icon></button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="row rounded-lg overflow-hidden shadow">
+
+  <div class="col-12 px-0">
+    <div class="bg-white">
+
+      <div class="bg-gray px-4 py-2 bg-light">
+        <p class="h5 mb-0 py-1">Чат комнаты</p>
+      </div>
+
+      <div  action="#" class="bg-light">
+        <div class="input-group">
+          <input type="text" [(ngModel)]="userName" placeholder="Введите ваше имя" aria-describedby="button-addon2" class="form-control rounded-0 border-0 py-4 bg-light">
+        </div>
+        <div class="input-group">
+          <input type="text" [(ngModel)]="roomSearch" placeholder="Комнаты" aria-describedby="button-addon2" class="form-control rounded-0 border-0 py-4 bg-light">
+          <div class="input-group-append">
+            <button id="button-addon2" [disabled]="loading" (click)="refreshRooms()" type="submit" class="btn btn-link"><fa-icon [icon]="faSpinner"></fa-icon></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="messages-box">
+        <div class="list-group rounded-0">
+
+          <button *ngFor="let room of rooms | roomFilterPipe:roomSearch" (click)="enterToRoom(room.name)" class="list-group-item list-group-item-action list-group-item-light rounded-0">
+            <div class="media">
+              <div class="media-body ml-4">
+                <div class="d-flex align-items-center justify-content-between mb-1">
+                  <h6 class="mb-0">{{room.name}}</h6>
+                </div>
+                <p class="font-italic mb-0 text-small">Войти</p>
+              </div>
+            </div>
+          </button>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
