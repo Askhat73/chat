@@ -6,7 +6,7 @@
     <div class="col-12 px-0">
       <div class="px-4 pt-5 chat-box bg-white">
         <!-- Sender Message-->
-        <div *ngFor="let message of messages">
+        <div *ngFor="let message of webSocketService?.messages">
           <div class="media w-50 mb-0" *ngIf="authService.getUserName() !== message.user_name; else selfMessage">
             <div class="media-body ml-3">
               <p class="small text-muted mb-0">{{message.user_name}}</p>

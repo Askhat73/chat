@@ -16,7 +16,7 @@ export class ChatLobbyComponent implements OnInit {
   faSpinner = faSpinner;
   faCheck = faCheck;
   createRoomForm = new FormGroup({
-    roomName: new FormControl('', [Validators.required]),
+    roomName: new FormControl('', [Validators.required, Validators.pattern('^[A-Za-z0-9_]+$')]),
   });
   userName: string = '';
   roomSearch: string = '';
@@ -36,7 +36,8 @@ export class ChatLobbyComponent implements OnInit {
 
   createRoom() {
     const roomName = this.createRoomForm.get('roomName');
-    if(roomName?.value.trim()) {
+    console.log(roomName);
+    if(!this.createRoomForm.invalid && roomName?.value.trim()) {
       this.creatingRoom = true;
       this.roomService.createRoom(roomName?.value.trim()).subscribe((room: Room) => {
         this.createRoomForm.reset();

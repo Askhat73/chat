@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "channels",
     "corsheaders",
+    "django_filters",
     # Local apps
     "core.apps.CoreConfig",
     "users.apps.UsersConfig",

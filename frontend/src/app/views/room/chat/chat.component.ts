@@ -1,48 +1,49 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {faPaperPlane} from "@fortawesome/free-solid-svg-icons";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
-import {ChatService} from "../../../core/services/chat.service";
-import {Message} from "../../../core/interfaces/message";
 import {AuthService} from "../../../core/services/auth.service";
 import {ActivatedRoute, Params} from "@angular/router";
-import {WebsocketService} from "../../../core/services/websocket.service";
+import {WebSocketService} from "../../../core/services/web-socket.service";
+import {MessageService} from "../../../core/services/message.service";
 
 @Component({
   selector: 'app-chat',
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.scss']
 })
-export class ChatComponent implements OnInit {
+export class ChatComponent implements OnInit, OnDestroy {
 
-  messages: Message[] = []
   faPaperPlane = faPaperPlane
   messageForm = new FormGroup({
     message: new FormControl('', [Validators.required, Validators.nullValidator]),
   })
-  private chatService?: ChatService;
+  public webSocketService?: WebSocketService;
 
   constructor(
     public authService: AuthService,
-    private websocketService: WebsocketService,
     private route: ActivatedRoute,
+    private messageService: MessageService,
   ) { }
 
   ngOnInit(): void {
+    this.openWebSocket();
+  }
+
+  ngOnDestroy(): void {
+    this.webSocketService?.closeWebSocket();
+  }
+
+  openWebSocket(): void {
     this.route.params.subscribe((params: Params) => {
-      this.chatService = new ChatService(params.name, this.websocketService, this.authService)
-      this.chatService.messages$.subscribe((message: Message) => {
-        this.messages.push(message);
-        console.log(message);
-      }, error => {
-        console.log(error);
-      });
-    })
+      this.webSocketService = new WebSocketService(params.name, this.authService, this.messageService);
+      this.webSocketService.openWebSocket();
+    });
   }
 
   sendMessage() {
     const message = this.messageForm.get('message')
     if (!message?.invalid) {
-      this.chatService?.messages$.next({text: message?.value, user_name: this.authService.getUserName()});
+      this.webSocketService?.sendMessage({text: message?.value, user_name: this.authService.getUserName()});
       this.messageForm.reset();
     }
   }

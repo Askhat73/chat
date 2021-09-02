@@ -14,6 +14,11 @@
             <button id="button-add" type="submit" class="btn btn-link"><fa-icon [icon]="faCheck"></fa-icon></button>
           </div>
         </div>
+        <p
+          *ngIf="createRoomForm.get('roomName')?.touched &&
+          createRoomForm.get('roomName')?.invalid  &&
+          createRoomForm.get('roomName')?.errors?.pattern"
+          class="small mb-0 colo text-danger">*Название комнаты можеть содержать только латинские буквы, цифры и нижнее подчеркивание</p>
       </form>
     </div>
   </div>

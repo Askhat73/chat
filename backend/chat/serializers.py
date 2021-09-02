@@ -2,7 +2,7 @@ from django.utils import timezone
 from rest_framework import serializers
 
 from chat.enums import MessageType
-from chat.models import Room
+from chat.models import Room, Message
 
 
 class MessageSerializer(serializers.Serializer):
@@ -18,3 +18,13 @@ class RoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = Room
         fields = ["id", "name"]
+
+
+class MessageModelSerializer(serializers.ModelSerializer):
+
+    user_name = serializers.CharField(source="user.username")
+    room_name = serializers.CharField(source="room.name")
+
+    class Meta:
+        model = Message
+        fields = ["id", "text", "user_name", "room_name", "created_at"]
