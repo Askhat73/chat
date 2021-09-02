@@ -5,26 +5,34 @@
     <!-- Chat Box-->
     <div class="col-12 px-0">
       <div class="px-4 pt-5 chat-box bg-white">
-        <!-- Sender Message-->
+
         <div *ngFor="let message of webSocketService?.messages">
-          <div class="media w-50 mb-0" *ngIf="authService.getUserName() !== message.user_name; else selfMessage">
-            <div class="media-body ml-3">
-              <p class="small text-muted mb-0">{{message.user_name}}</p>
-              <div class="bg-light rounded-pill py-2 px-3 mb-2">
-                <p class="text-small mb-0 text-muted">{{message.text}}</p>
-                <p class="text-right text-time text-muted mb-0">{{message.created_at | date:'HH:mm MMM d'}}</p>
-              </div>
+          <div *ngIf="message.type === messageType.chatNotification; else messages">
+            <div class="text-center mb-2" >
+              <p class="text-small mb-0 text-muted">{{message.user_name}} {{message.text}}</p>
             </div>
           </div>
-          <ng-template #selfMessage>
-            <div class="media w-50 ml-auto mb-0">
-              <div class="media-body">
-                <div class="bg-primary rounded-pill py-2 px-3 mb-2">
-                  <p class="text-small mb-0 text-white">{{message.text}}</p>
-                  <p class="text-right text-time text-white mb-0">{{message.created_at | date:'HH:mm MMM d'}}</p>
+
+          <ng-template #messages>
+            <div class="media w-50 mb-0" *ngIf="authService.getUserName() !== message.user_name; else selfMessage">
+              <div class="media-body ml-3">
+                <p class="small text-muted mb-0">{{message.user_name}}</p>
+                <div class="bg-light rounded-pill py-2 px-3 mb-2">
+                  <p class="text-small mb-0 text-muted">{{message.text}}</p>
+                  <p class="text-right text-time text-muted mb-0">{{message.created_at | date:'HH:mm MMM d'}}</p>
                 </div>
               </div>
             </div>
+            <ng-template #selfMessage>
+              <div class="media w-50 ml-auto mb-0">
+                <div class="media-body">
+                  <div class="bg-primary rounded-pill py-2 px-3 mb-2">
+                    <p class="text-small mb-0 text-white">{{message.text}}</p>
+                    <p class="text-right text-time text-white mb-0">{{message.created_at | date:'HH:mm MMM d'}}</p>
+                  </div>
+                </div>
+              </div>
+            </ng-template>
           </ng-template>
         </div>
 

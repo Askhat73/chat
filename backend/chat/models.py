@@ -24,6 +24,10 @@ class Room(StandardModel):
 class Message(StandardModel):
     """Сообщение."""
 
+    class Type(models.TextChoices):
+        MESSAGE = "chat_message", _("Сообщение")
+        NOTIFICATION = "chat_notification", _("Уведомление")
+
     text = models.TextField(verbose_name=_("Текст сообщения"))
     user = models.ForeignKey(
         "users.CustomUser",
@@ -37,6 +41,11 @@ class Message(StandardModel):
         on_delete=models.SET_NULL,
         null=True,
         verbose_name=_("Комната"),
+    )
+    type = models.CharField(
+        choices=Type.choices,
+        max_length=50,
+        verbose_name=_("Тип сообщения"),
     )
 
     class Meta:

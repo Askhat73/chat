@@ -25,7 +25,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             data={
                 "type": MessageType.NOTIFICATION.value,
                 "user_name": user_name,
-                "text": "вступил(а) в группу",
+                "text": "вошел(ла) в комнату",
                 "created_at": timezone.now(),
             }
         )
@@ -33,11 +33,23 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         await self.set_user(name=user_name)
-        await self.accept()
         await self.channel_layer.group_send(self.room_group_name, serializer.data)
+        await self.save_message(serializer.data)
+        await self.accept()
 
     async def disconnect(self, close_code: int):
         """Обрабатывает отключение пользователя от Вебсокета."""
+        serializer = MessageSerializer(
+            data={
+                "type": MessageType.NOTIFICATION.value,
+                "user_name": self.user.username,
+                "text": "покинул(а) комнату",
+                "created_at": timezone.now(),
+            }
+        )
+        serializer.is_valid(raise_exception=True)
+        await self.save_message(serializer.data)
+        await self.channel_layer.group_send(self.room_group_name, serializer.data)
         await logout(self.scope)
         await database_sync_to_async(self.scope["session"].save)()
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
@@ -55,13 +67,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def chat_message(self, message: dict):
         """Обрабатывает отправку сообщения группам."""
-        message.pop("type", None)
         message["type"] = MessageType.MESSAGE.value
-
         await self.send(text_data=json.dumps(message))
 
     async def chat_notification(self, data: dict):
         """Обрабатывает отправку сообщения группам."""
+        data["type"] = MessageType.NOTIFICATION.value
 
         await self.send(text_data=json.dumps(data))
 
@@ -75,7 +86,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def save_message(self, message: dict) -> Message:
         """Сохраняет сообщение."""
-        message.pop("type", None)
         message.pop("user_name", None)
         message = Message(**message)
         message.user = self.user

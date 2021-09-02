@@ -5,11 +5,12 @@ import {AuthService} from "../../../core/services/auth.service";
 import {ActivatedRoute, Params} from "@angular/router";
 import {WebSocketService} from "../../../core/services/web-socket.service";
 import {MessageService} from "../../../core/services/message.service";
+import {MessageType} from "../../../core/enums/chat";
 
 @Component({
   selector: 'app-chat',
   templateUrl: './chat.component.html',
-  styleUrls: ['./chat.component.scss']
+  styleUrls: ['./chat.component.scss'],
 })
 export class ChatComponent implements OnInit, OnDestroy {
 
@@ -38,6 +39,7 @@ export class ChatComponent implements OnInit, OnDestroy {
       this.webSocketService = new WebSocketService(params.name, this.authService, this.messageService);
       this.webSocketService.openWebSocket();
     });
+    console.log(this.webSocketService?.messages)
   }
 
   sendMessage() {
@@ -46,5 +48,9 @@ export class ChatComponent implements OnInit, OnDestroy {
       this.webSocketService?.sendMessage({text: message?.value, user_name: this.authService.getUserName()});
       this.messageForm.reset();
     }
+  }
+
+  get messageType(): typeof MessageType {
+    return MessageType
   }
 }
