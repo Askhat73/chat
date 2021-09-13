@@ -1,6 +1,7 @@
 import json
 from urllib.parse import parse_qs
 
+from asgiref.sync import async_to_sync
 from channels.auth import login, logout
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
@@ -78,10 +79,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def set_user(self, name: str) -> None:
-        """Сохраняет сообщение."""
+        """Авторизует пользователя."""
         self.user, _ = User.objects.get_or_create(username=name)
-        login(self.scope, self.user)
-        database_sync_to_async(self.scope["session"].save)()
+        async_to_sync(login)(self.scope, self.user)
+        self.scope["session"].save()
 
     @database_sync_to_async
     def save_message(self, message: dict) -> Message:
