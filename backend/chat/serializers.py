@@ -1,4 +1,6 @@
+from django.core import validators
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
 from chat.enums import MessageType
@@ -15,6 +17,20 @@ class MessageSerializer(serializers.Serializer):
 
 
 class RoomSerializer(serializers.ModelSerializer):
+
+    name = serializers.CharField(
+        max_length=50,
+        validators=[
+            validators.RegexValidator(
+                regex=r"^[a-zA-Z0-9_]+$",
+                message=_(
+                    "Название комнаты можеть содержать только латинские буквы, цифры "
+                    "и нижнее подчеркивание",
+                ),
+            )
+        ],
+    )
+
     class Meta:
         model = Room
         fields = ["id", "name"]
