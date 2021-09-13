@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {faCheck, faSpinner} from '@fortawesome/free-solid-svg-icons';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {Room} from "../../../core/interfaces/room";
@@ -12,6 +12,8 @@ import {Router} from "@angular/router";
   styleUrls: ['./chat-lobby.component.scss']
 })
 export class ChatLobbyComponent implements OnInit {
+
+  @ViewChild('nameInput', {static: false}) nameRef?: ElementRef;
 
   faSpinner = faSpinner;
   faCheck = faCheck;
@@ -63,6 +65,8 @@ export class ChatLobbyComponent implements OnInit {
     if(this.userName.trim()) {
       this.authService.setUserName(this.userName.trim());
       this.router.navigate(['/room', name]);
+      return;
     }
+    this.nameRef!.nativeElement.focus();
   }
 }
