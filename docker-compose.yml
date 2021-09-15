@@ -1,0 +1,42 @@
+version: '3.7'
+
+services:
+  backend:
+    image: app
+    build: ./backend
+    command: sh run.sh
+    env_file:
+      - ./.env
+    volumes:
+    - ./backend/:/code
+    ports:
+    - 8000:8000
+    extra_hosts:
+      - "hostname:127.0.0.1"
+    depends_on:
+      - db
+      - redis
+  frontend:
+    build: ./frontend
+    ports:
+      - '4200:4200'
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/usr/local/app
+      - /usr/local/app/node_modules
+  redis:
+    image: redis:6.2.5-alpine
+    ports:
+      - 6379:6379
+  db:
+    image: postgres:12.0-alpine
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=123456
+      - POSTGRES_DB=chat_db
+    volumes:
+    - postgres_data:/var/lib/postgresql/data/
+
+volumes:
+  postgres_data:

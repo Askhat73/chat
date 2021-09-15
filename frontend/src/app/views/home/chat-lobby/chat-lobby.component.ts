@@ -38,7 +38,6 @@ export class ChatLobbyComponent implements OnInit {
 
   createRoom() {
     const roomName = this.createRoomForm.get('roomName');
-    console.log(roomName);
     if(!this.createRoomForm.invalid && roomName?.value.trim()) {
       this.creatingRoom = true;
       this.roomService.createRoom(roomName?.value.trim()).subscribe((room: Room) => {
